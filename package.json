@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend for crypto data app",
+  "main": "app.js",
+  "author": "Vinay Rawat",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "clear && nodemon app.js"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "joi": "^17.4.0",
+    "json-web-token": "^3.2.0",
+    "mongoose": "^5.13.2"
+  }
+}
