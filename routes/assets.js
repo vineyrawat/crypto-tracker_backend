@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const { logoUrl } = require("../config/coincap");
 const asset = require("../controllers/assets");
 
 router.get("/", async (req, res) => {
@@ -21,9 +20,9 @@ router.get("/:id", async (req, res) => {
   const { id } = req.params;
   const [data, error] = await asset.get(id);
   if (error) {
-    res.status(500).json({
+    res.status(404).json({
       status: "error",
-      error: "Unable to fetch " + id,
+      error: "Unable to fetch" + id,
     });
   } else {
     res.json({
@@ -33,9 +32,23 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.get("/logo/:id/:symbol", (req, res) => {
-  const { id, symbol } = req.params;
-  res.redirect(logoUrl(id, symbol));
+router.post("/", async (req, res) => {
+  const { watchlist } = req.body;
+  if (!watchlist)
+    return res.send({ status: "failure", error: "watchlist is required" });
+  const [data, error] = await asset.getFiltered(watchlist);
+
+  if (error) {
+    res.status(404).json({
+      status: "error",
+      error: "Unable to fetch data",
+    });
+  } else {
+    res.json({
+      status: "success",
+      response: data,
+    });
+  }
 });
 
 module.exports = router;

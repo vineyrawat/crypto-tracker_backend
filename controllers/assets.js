@@ -1,5 +1,5 @@
-const { baseUrl } = require("../config/coincap");
 const axios = require("axios").default;
+const { baseUrl } = require("../config/coincap");
 
 const get = async (url) => {
   try {
@@ -24,9 +24,13 @@ const asset = {
     } else {
       data = data.data;
       data = data.data;
+      const filtered = [];
       items.forEach((item) => {
-        return data.find((i) => i.symbol == item);
+        return filtered.push(
+          data.find((i) => i.symbol == String(item).toUpperCase())
+        );
       });
+      return [filtered, null];
     }
   },
 };
