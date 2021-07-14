@@ -45,7 +45,38 @@ router.post("/login", async (req, res) => {
 router.get("/watchlist/:email", async (req, res) => {
   const { email } = req.params;
   const user = await User.findOne({ email });
-  res.send(user.watchlist);
+  if (!user) return res.send([]);
+  return res.send(user.watchlist);
+});
+
+router.post("/watchlist/add", async (req, res) => {
+  const { token, item } = req.body;
+  const { email } = jwt.decode(token);
+  if (!email) return res.send("Invalid token");
+  if (!item) return res.send("Please provide at least one item to add");
+  const user = await User.findOne({ email });
+  if (!user) return res.send("Invalid token");
+  const watchlist = user.watchlist;
+  if (watchlist.includes(item)) return res.send("Successfully added");
+  User.updateOne({ email }, { watchlist: [...watchlist, item] })
+    .then((data) => res.send("Successfully added"))
+    .catch((err) => res.status(500).send("Unable to add"));
+});
+
+router.post("/watchlist/remove", async (req, res) => {
+  const { token, item } = req.body;
+  const { email } = jwt.decode(token);
+  if (!email) return res.send("Invalid token");
+  if (!item) return res.send("Please provide at least one item to remove");
+  const user = await User.findOne({ email });
+  if (!user) return res.send("Invalid token");
+  let watchlist = user.watchlist;
+  if (!watchlist.includes(item)) return res.send("Successfully removed");
+  const itemIndex = watchlist.indexOf(item);
+  watchlist.splice(itemIndex, 1);
+  User.updateOne({ email }, { watchlist: watchlist })
+    .then((data) => res.send("Successfully removed"))
+    .catch((err) => res.status(500).send("Unable to remove"));
 });
 
 module.exports = router;
